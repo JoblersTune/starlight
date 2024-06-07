@@ -1,6 +1,5 @@
 /** @jsx h */
 import { h } from 'preact';
-import Badge from './Badge.astro';
 import { flattenSidebar } from '../utils/navigation';
 
 function getCompletedPosts() {
@@ -18,9 +17,9 @@ const getPostId = (label) => label.toLowerCase().replace(/\s+/g, '-');
 const SidebarClient = ({ sublist, nested }) => {
     const completedPosts = getCompletedPosts();
     return (
-        <ul className={nested ? '' : 'top-level'}>
+        <ul className={`${nested ? '' : 'top-level'} no-bullets`}>
             {sublist.map((entry) => (
-                <li key={entry.href || entry.label}>
+                <li key={entry.href || entry.label} className="sidebar-item">
                     {entry.type === 'link' ? (
                         <a
                             href={entry.href}
@@ -28,30 +27,15 @@ const SidebarClient = ({ sublist, nested }) => {
                             className={`${!nested ? 'large' : ''} ${entry.attrs.class}`}
                             {...entry.attrs}
                         >
+                            {completedPosts.has(getPostId(entry.label)) && <span className="tick">✔</span>}
                             <span>{entry.label}</span>
-                            {completedPosts.has(getPostId(entry.label)) && ' DONE '}
-                            {/* {entry.badge && (
-                                <>
-                                    {' '}
-                                    <Badge
-                                        text={entry.badge.text}
-                                        variant={entry.isCurrent ? 'outline' : entry.badge.variant}
-                                    />
-                                </>
-                            )} */}
                         </a>
                     ) : (
                         <details open={flattenSidebar(entry.entries).some((i) => i.isCurrent) || !entry.collapsed}>
                             <summary>
                                 <div className="group-label">
+                                    {completedPosts.has(getPostId(entry.label)) && <span className="tick">✔</span>}
                                     <span className="large">{entry.label}</span>
-                                    {completedPosts.has(getPostId(entry.label)) && ' DONE '}
-                                    {/* {entry.badge && (
-                                        <>
-                                            {' '}
-                                            <Badge text={entry.badge.text} variant={entry.badge.variant} />
-                                        </>
-                                    )} */}
                                 </div>
                             </summary>
                             <SidebarClient sublist={entry.entries} nested />
